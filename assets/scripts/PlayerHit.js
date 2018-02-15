@@ -33,7 +33,7 @@ cc.Class({
     this._hitAnimation = true;
     this._hitAnimationTimer = 0;
     this._hitBlinkTime = 0;
-    MessagePipeline.sendMessage('soundPlay', 'Hit');
+    MessagePipeline.sendMessage('soundPlay', 'Damage');
   },
 
   // called every frame, uncomment this function to activate update callback
@@ -59,7 +59,7 @@ cc.Class({
         if (this.life.life < 0) {
           MessagePipeline.sendMessage('gameOver');
         } else {
-          MessagePipeline.sendMessage('turnStart');
+          MessagePipeline.sendMessage('turnStart', false);
         }
       }
     }

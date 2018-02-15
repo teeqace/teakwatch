@@ -14,19 +14,21 @@ cc.Class({
   // use this for initialization
   onLoad: function () {
     this._score = 0;
-    MessagePipeline.on('gameStart', this._gameStart, this);
+    MessagePipeline.on('scoreReset', this._scoreReset, this);
+    MessagePipeline.on('addScore', this._addScore, this);
   },
 
-  _gameStart() {
+  _scoreReset() {
     this._score = 0;
     this._displayScore();
   },
 
-  addScore(value) {
-    this._score = Math.min(this._score + value, 999);
-    if (this._score % 5 === 0) {
-      MessagePipeline.sendMessage('levelUp');
-    }
+  _addScore(event) {
+    let score = event.getUserData();
+    this._score = Math.min(this._score + score, 999);
+    // if (this._score % 5 === 0) {
+    //   MessagePipeline.sendMessage('levelUp');
+    // }
     this._displayScore();
   },
 
@@ -43,8 +45,4 @@ cc.Class({
       }
     }
   }
-  // called every frame, uncomment this function to activate update callback
-  // update: function (dt) {
-
-  // },
 });

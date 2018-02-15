@@ -1,6 +1,32 @@
 import MessagePipeline from './utils/MessagePipeline';
 
-const SPAWN_CHANCE = 0.25;
+const DEMO_PLAY = [
+  [0],
+  [1],
+  [2],
+  [3],
+  [4],
+  [5],
+  [0,5],
+  [1,5],
+  [2,5],
+  [3,5],
+  [4,5],
+  [0,4,5],
+  [1,4,5],
+  [2,4,5],
+  [3,4,5],
+  [0,3,4,5],
+  [1,3,4,5],
+  [2,3,4,5],
+  [0,2,3,4,5],
+  [1,2,3,4,5],
+  [0,1,2,3,4,5],
+  [],
+  [0,1,2,3,4,5],
+  [],
+];
+// const SPAWN_CHANCE = 0.2;
 
 cc.Class({
   extends: cc.Component,
@@ -11,6 +37,8 @@ cc.Class({
 
   // use this for initialization
   onLoad: function () {
+    MessagePipeline.on('demoStart', this._demoStart, this);
+    MessagePipeline.on('demoStop', this._demoStop, this);
     this.objects = [];
     this.node.children.forEach((child) => {
       let object = child.getComponent('LCObject');
@@ -19,38 +47,81 @@ cc.Class({
       }
     }, this);
 
-    this._blockIndexes = [-1, -1];
+    this._blockIndexes = [];
+    this._demoIndex = 0;
 
-    this.maxIndex = this.objects.length;
-    this.index = -1;
+    this.maxIndex = this.objects.length - 1;
     this.displayBlock();
+  },
+
+  _demoStart() {
+    this._demoIndex = 0;
+  },
+
+  _demoStop() {
+    this._demoIndex = 0;
+    this._blockIndexes = [];
+    this.displayBlock();
+  },
+
+  isBotton() {
+    for (let i = 0; i < this._blockIndexes.length; i++) {
+      if (this._blockIndexes[i] >= 0) {
+        if (this._blockIndexes[i] === this.maxIndex) {
+          return true;
+        }
+      }
+    }
+    return false;
   },
 
   // _moveDown(i) {
   //   this._blockIndexes[i] = Math.min(this._blockIndexes[i] + 1, this.maxIndex);
   //   if (this._blockIndexes[i] === this.maxIndex) {
   //     this._blockIndexes[i] = -1;
-  //     MessagePipeline.sendMessage('checkHit', this.laneIndex);
+  //     MessagePipeline.sendMessage('checkHitFromBlock', this.laneIndex);
   //   }
   // },
 
-  tick() {
-    let spawned = false;
+  demoTick() {
+    this._blockIndexes = DEMO_PLAY[this._demoIndex];
+    this._demoIndex = (this._demoIndex + 1) % DEMO_PLAY.length;
+    this.displayBlock();
+  },
+
+  tick(spawn) {
     for (let i = 0; i < this._blockIndexes.length; i++) {
-      if (!spawned && this._blockIndexes[i] < 0) {
-        let spawn = Math.random();
-        if (spawn < SPAWN_CHANCE) {
-          this._blockIndexes[i] = 0;
-          spawned = true;
-        }
-      } else if (this._blockIndexes[i] >= 0) {
+      if (this._blockIndexes[i] >= 0) {
         this._blockIndexes[i] += 1;
-        if (this._blockIndexes[i] >= this.maxIndex) {
-          this._blockIndexes[i] = -1;
-          MessagePipeline.sendMessage('checkHit', this.laneIndex);
+        if (this._blockIndexes[i] === this.maxIndex) {
+          MessagePipeline.sendMessage('checkHitFromBlock', this.laneIndex);
+        } else if (this._blockIndexes[i] > this.maxIndex) {
+          // this._blockIndexes[i] = -1;
+          this._blockIndexes.splice(i, 1);
+          i -= 1;
         }
       }
     }
+    if (spawn === 1) {
+      this._blockIndexes.push(0);
+    }
+    // let spawned = false;
+    // for (let i = 0; i < this._blockIndexes.length; i++) {
+    //   if (!spawned && this._blockIndexes[i] < 0) {
+    //     let spawn = Math.random();
+    //     if (spawn < SPAWN_CHANCE) {
+    //       this._blockIndexes[i] = 0;
+    //       spawned = true;
+    //     }
+    //   } else if (this._blockIndexes[i] >= 0) {
+    //     this._blockIndexes[i] += 1;
+    //     if (this._blockIndexes[i] === this.maxIndex) {
+    //       MessagePipeline.sendMessage('checkHitFromBlock', this.laneIndex);
+    //     } else if (this._blockIndexes[i] > this.maxIndex) {
+    //       this._blockIndexes[i] = -1;
+    //     }
+    //   }
+    // }
     this.displayBlock();
   },
 
@@ -67,13 +138,7 @@ cc.Class({
   },
 
   reset() {
-    this.index = -1;
-    this._blockIndexes = [-1, -1];
+    this._blockIndexes = [];
     this.displayBlock();
   }
-
-  // called every frame, uncomment this function to activate update callback
-  // update: function (dt) {
-
-  // },
 });

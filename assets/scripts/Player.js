@@ -1,6 +1,6 @@
 import MessagePipeline from './utils/MessagePipeline';
 import LCObject from './LCObject';
-import Score from './Score';
+import Materials from './Materials';
 
 cc.Class({
   extends: cc.Component,
@@ -12,9 +12,8 @@ cc.Class({
       },
       visible: false
     },
-    scoreGetLeft: LCObject,
-    scoreGetRight: LCObject,
-    score: Score
+    materials: Materials
+
   },
 
   // use this for initialization
@@ -33,11 +32,48 @@ cc.Class({
 
     this._goalRight = true;
     this._movable = false;
-    MessagePipeline.on('gameStart', this._turnStart, this);
+    this._goalCount = 0;
+    this._demoTickCount = 0;
     MessagePipeline.on('turnStart', this._turnStart, this);
-    MessagePipeline.on('playerHit', this._playerHit, this);
+    MessagePipeline.on('tickStop', this._moveStop, this);
     MessagePipeline.on('moveLeft', this._moveLeft, this);
     MessagePipeline.on('moveRight', this._moveRight, this);
+    MessagePipeline.on('demoStart', this._demoStart, this);
+    MessagePipeline.on('demoStop', this._demoStop, this);
+    MessagePipeline.on('demoTick', this._demoTick, this);
+    
+    // cc.eventManager.addListener({
+    //   event: cc.EventListener.KEYBOARD,
+    //   onKeyPressed: (keyCode, event) => {
+    //     switch(keyCode) {
+    //       case cc.KEY.left:
+    //         this._moveLeft();
+    //         break;
+    //       case cc.KEY.right:
+    //         this._moveRight();
+    //         break;
+    //     }
+    //   }
+    // }, this);
+  },
+
+  _demoStart() {
+    this._demoPlay = true;
+    this._demoTickCount = -1;
+  },
+
+  _demoStop() {
+    this._demoPlay = false;
+    this.objects.forEach((child, index) => {
+      child.displayOff();
+    }, this);
+  },
+
+  _demoTick() {
+    this._demoTickCount = (this._demoTickCount + 1) % (this.indexMax * 2);
+    this.objects.forEach((child, index) => {
+      child.display(index === this.indexMax - Math.abs(this._demoTickCount - this.indexMax));
+    }, this);
   },
 
   _moveLeft() {
@@ -51,16 +87,14 @@ cc.Class({
     this._index = Math.max(0, this._index - 1);
     if (!this._goalRight && beforeIndex > 0 && this._index === 0) {
       this._goalRight = true;
-      this.scoreGetLeft.displayOn();
-      this.score.addScore(1);
-      setTimeout(() => {
-        this.scoreGetLeft.displayOff();
-      }, 1000);
-      MessagePipeline.sendMessage('soundPlay', 'Goal');
+      this.goalCountUp();
+      MessagePipeline.sendMessage('addStack');
+      MessagePipeline.sendMessage('addScore', 1);
     } else {
       MessagePipeline.sendMessage('soundPlay', 'Move');
     }
     this.displayPlayer();
+    MessagePipeline.sendMessage('checkHitFromPlayer', this._index);
   },
 
   _moveRight() {
@@ -74,23 +108,31 @@ cc.Class({
     this._index = Math.min(this._index + 1, this.indexMax);
     if (this._goalRight && beforeIndex < this.indexMax && this._index === this.indexMax) {
       this._goalRight = false;
-      this.scoreGetRight.displayOn();
-      this.score.addScore(1);
-      setTimeout(() => {
-        this.scoreGetRight.displayOff();
-      }, 1000);
-      MessagePipeline.sendMessage('soundPlay', 'Goal');
+      MessagePipeline.sendMessage('soundPlay', 'Material');
     } else {
       MessagePipeline.sendMessage('soundPlay', 'Move');
     }
-    // MessagePipeline.sendMessage('checkHit');
     this.displayPlayer();
+    MessagePipeline.sendMessage('checkHitFromPlayer', this._index);
+  },
+
+  goalCountUp() {
+    this._goalCount += 1;
+    if (this._goalCount % 4 === 0) {
+      MessagePipeline.sendMessage('levelUp');
+    }
   },
 
   displayPlayer() {
     this.objects.forEach((child, index) => {
       child.display(index === this._index);
     }, this);
+    if (this._goalRight) {
+      this.materials.displayMaterialOff();
+      this.materials.displayMaterialOn(this.indexMax);
+    } else {
+      this.materials.displayMaterialOn(this._index);
+    }
   },
 
   _turnStart() {
@@ -100,12 +142,7 @@ cc.Class({
     this.displayPlayer();
   },
 
-  _playerHit() {
+  _moveStop() {
     this._movable = false;
   }
-
-  // called every frame, uncomment this function to activate update callback
-  // update: function (dt) {
-
-  // },
 });

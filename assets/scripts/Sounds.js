@@ -5,11 +5,14 @@ const KEY = 'teakwatch:soundon';
 const SOUND_ON = 1;
 const MAX_AUDIO = 5;
 const CLIP_NAME = {
-  'Tick': 0,
-  'Move': 1,
-  'Goal': 2,
-  'Hit': 3,
-  'GameOver': 4
+  'GameStart': 0,
+  'Tick': 1,
+  'Move': 2,
+  'Material': 3,
+  'Goal': 4,
+  'Bonus': 5,
+  'Damage': 6,
+  'GameOver': 7
 };
 
 cc.Class({
@@ -61,11 +64,4 @@ cc.Class({
       cc.audioEngine.play(this.audioClips[index], false, 1);
     }
   }
-
-
-
-  // called every frame, uncomment this function to activate update callback
-  // update: function (dt) {
-
-  // },
 });

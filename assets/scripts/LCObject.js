@@ -1,3 +1,6 @@
+const COLOR_OFF = '#B8C6D1';
+const COLOR_ON = '#272C30';
+
 cc.Class({
   extends: cc.Component,
 
@@ -12,6 +15,9 @@ cc.Class({
     this.objectOn.node.width = this.node.width;
     this.objectOn.node.height = this.node.height;
     this.objectOn.spriteFrame = this.node.getComponent(cc.Sprite).spriteFrame;
+
+    this.node.color = cc.hexToColor(COLOR_OFF);
+    this.objectOn.node.color = cc.hexToColor(COLOR_ON);
   },
 
   display(value) {

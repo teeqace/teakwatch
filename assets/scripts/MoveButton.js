@@ -18,9 +18,5 @@ cc.Class({
     } else {
       MessagePipeline.sendMessage('moveLeft');
     }
-  },
-  // called every frame, uncomment this function to activate update callback
-  // update: function (dt) {
-
-  // },
+  }
 });

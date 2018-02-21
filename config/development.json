@@ -1,0 +1,8 @@
+{
+  "postbuild": {
+    "sourceMap": false,
+    "mapping": {
+      "playfabId": "47"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "MenuLeaderboardOpen",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_duration": 0.5,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "props": {},
+    "paths": {
+      "MenuLeaderboard": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": 46,
+              "curve": "quartOut"
+            },
+            {
+              "frame": 0.5,
+              "value": -10
+            }
+          ],
+          "y": [
+            {
+              "frame": 0,
+              "value": 456,
+              "curve": "quartOut"
+            },
+            {
+              "frame": 0.5,
+              "value": 856
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

@@ -1,0 +1,42 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "MenuManualClose",
+  "_objFlags": 0,
+  "_rawFiles": null,
+  "_duration": 0.5,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "props": {},
+    "paths": {
+      "MenuManual": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": -40,
+              "curve": "quartOut"
+            },
+            {
+              "frame": 0.5,
+              "value": 179
+            }
+          ],
+          "y": [
+            {
+              "frame": 0,
+              "value": 727,
+              "curve": "quartOut"
+            },
+            {
+              "frame": 0.5,
+              "value": 348
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

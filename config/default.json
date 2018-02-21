@@ -1,0 +1,12 @@
+{
+  "postbuild": {
+    "template": "facebook",
+    "sourceMap": true,
+    "mapping": {
+      "playfabId": "F5B",
+      "amplitudeApiKey": ""
+    },
+    "facebookAppId": "164360840860193",
+    "facebookUploadAccessToken": "EAAYsfZAxiFmMBAG1ZAHJIjFNomoxbZCZA0ChvSiFxHSB1582cf49uUNr3CPyWZBYZCBbf8iubHe1JQsfs4betzoWJvLTFrgmOpGF3dDgjgV4oXP47IoPa0P26Y6iG87m2xWHFgVBu1mPZCYyF2nNXK8pzR4qwNZC5u0zZBHctqMNGzgZDZD"
+  }
+}

@@ -24,7 +24,6 @@
     "EditorBox",
     "VideoPlayer",
     "RichText",
-    "Animation",
     "MotionStreak",
     "Collider",
     "Physics",
@@ -34,7 +33,9 @@
     "RenderTexture",
     "Chipmunk",
     "Camera",
-    "Intersection"
+    "Intersection",
+    "WebView",
+    "CCSpriteDistortion"
   ],
   "fit-height": true,
   "fit-width": false,

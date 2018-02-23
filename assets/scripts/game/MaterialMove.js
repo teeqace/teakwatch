@@ -18,7 +18,7 @@ cc.Class({
     }, this);
     this._objLength = this.objects.length;
     MessagePipeline.on('game:displayMaterial', this._displayMaterial, this);
-    MessagePipeline.on('game:playerDamageMaterialBlink', this._playerDamageMaterialBlink, this);
+    MessagePipeline.on('game:playerDamageBlink', this._playerDamageBlink, this);
   },
 
   _displayMaterial() {
@@ -35,7 +35,7 @@ cc.Class({
     }, this);
   },
 
-  _playerDamageMaterialBlink(event) {
+  _playerDamageBlink(event) {
     if (GameManager.goalRight) {
       return;
     }

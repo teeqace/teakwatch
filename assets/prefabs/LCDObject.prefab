@@ -86,12 +86,12 @@
       "__id__": 4
     },
     "_id": "",
-    "_opacity": 32,
+    "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 36,
-      "g": 33,
-      "b": 30,
+      "r": 0,
+      "g": 0,
+      "b": 0,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,

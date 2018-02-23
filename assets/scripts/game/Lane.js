@@ -1,38 +1,23 @@
 import MessagePipeline from '../utils/MessagePipeline';
 import GameManager from '../managers/GameManager';
 
-const DEMO_PLAY = [
-  [0],
-  [1],
-  [2],
-  [3],
-  [4],
-  [0,4],
-  [1,4],
-  [2,4],
-  [3,4],
-  [0,3,4],
-  [1,3,4],
-  [2,3,4],
-  [0,2,3,4],
-  [1,2,3,4],
-  [0,1,2,3,4],
-  [],
-  [0,1,2,3,4],
-  [],
-];
-
 cc.Class({
   extends: cc.Component,
 
   properties: {
-    laneIndex: 0
+    laneIndex: 0,
+    blockIndexes: {
+      visible: false,
+      get: function() {
+        return this._blockIndexes;
+      }
+    }
   },
 
   // use this for initialization
   onLoad: function () {
-    MessagePipeline.on('game:demoStart', this._demoStart, this);
-    MessagePipeline.on('game:demoStop', this._demoStop, this);
+    MessagePipeline.on('game:demoStart', this._displayClear, this);
+    MessagePipeline.on('game:demoStop', this._displayClear, this);
     this.objects = [];
     this.node.children.forEach((child) => {
       let object = child.getComponent('LCDObject');
@@ -42,18 +27,12 @@ cc.Class({
     }, this);
 
     this._blockIndexes = [];
-    this._demoIndex = 0;
 
     this.maxIndex = this.objects.length - 1;
     this.displayBlock();
   },
 
-  _demoStart() {
-    this._demoIndex = 0;
-  },
-
-  _demoStop() {
-    this._demoIndex = 0;
+  _displayClear() {
     this._blockIndexes = [];
     this.displayBlock();
   },
@@ -69,17 +48,11 @@ cc.Class({
     return false;
   },
 
-  demoTick() {
-    this._blockIndexes = DEMO_PLAY[this._demoIndex];
-    this._demoIndex = (this._demoIndex + 1) % DEMO_PLAY.length;
-    this.displayBlock();
-  },
-
   tick(spawn) {
     for (let i = 0; i < this._blockIndexes.length; i++) {
       if (this._blockIndexes[i] >= 0) {
         this._blockIndexes[i] += 1;
-        if (this._blockIndexes[i] === this.maxIndex) {
+        if (this._blockIndexes[i] === this.maxIndex && !GameManager.isDemo) {
           GameManager.addBottom(this.laneIndex);
           GameManager.checkHitFromBlock(this.laneIndex);
         } else if (this._blockIndexes[i] > this.maxIndex) {
@@ -88,7 +61,7 @@ cc.Class({
         }
       }
     }
-    if (spawn > 0) {
+    if (spawn) {
       this._blockIndexes.push(0);
     }
     this.displayBlock();

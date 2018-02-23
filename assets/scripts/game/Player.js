@@ -24,7 +24,6 @@ cc.Class({
     this.indexMax = this.objects.length - 1;
     this._displayPlayer();
 
-    this._demoPlay = false;
     this._demoTickCount = 0;
 
     this._damageAnimation = false;
@@ -52,19 +51,17 @@ cc.Class({
   },
 
   _demoStart() {
-    this._demoPlay = true;
     this._demoTickCount = -1;
   },
 
   _demoStop() {
-    this._demoPlay = false;
     this.objects.forEach((child, index) => {
-      child.displayOff();
+      child.display(index === 0);
     }, this);
   },
 
   _tick() {
-    if (!this._demoPlay) {
+    if (!GameManager.isDemo) {
       return;
     }
     this._demoTickCount = (this._demoTickCount + 1) % (this.indexMax * 2);
@@ -120,7 +117,7 @@ cc.Class({
     if (blinkChange) {
       this._blinkOn = this._damageAnimationTimer < BLINK_TIME / 2;
       this.objects[GameManager.playerIndex].display(this._blinkOn);
-      MessagePipeline.sendMessage('game:playerDamageMaterialBlink', this._blinkOn);
+      MessagePipeline.sendMessage('game:playerDamageBlink', this._blinkOn);
     }
     if (this._damageAnimationTimer >= BLINK_TIME) {
       this._damageAnimationTimer = 0;

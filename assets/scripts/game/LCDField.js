@@ -25,7 +25,6 @@ cc.Class({
     MessagePipeline.on('game:demoStop', this._demoStop, this);
     MessagePipeline.on('game:tick', this._tick, this);
     MessagePipeline.on('game:displayPause', this._displayPause, this);
-    this._demo = false;
     this._demoTickOn = false;
 
     this._allLCDObjects = [];
@@ -41,7 +40,7 @@ cc.Class({
     this.gameLabel.displayOn();
     this.overLabel.displayOn();
     MessagePipeline.sendMessage('game:tickReset');
-    MessagePipeline.sendMessage('game:demoStart');
+    GameManager.demoStart();
   },
 
   _pressStartButton() {
@@ -72,17 +71,15 @@ cc.Class({
   },
 
   _demoStart() {
-    this._demo = true;
     this._demoTickOn = false;
   },
 
   _demoStop() {
-    this._demo = false;
     this._demoTickOn = false;
   },
 
   _tick() {
-    if (!this._demo) {
+    if (!GameManager.isDemo) {
       return;
     }
     this._demoTickOn = !this._demoTickOn;

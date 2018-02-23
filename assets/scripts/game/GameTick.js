@@ -1,9 +1,9 @@
 import MessagePipeline from '../utils/MessagePipeline';
 import GameManager from '../managers/GameManager';
 
-const INIT_TICK = 0.75;
+const INIT_TICK = 0.80;
 // const INIT_TICK = 0.25;
-const MIN_TICK = 0.25;
+const MIN_TICK = 0.30;
 const PROGRESSIVE = 0.05;
 
 cc.Class({
@@ -51,9 +51,13 @@ cc.Class({
     if (GameManager.isPaused) {
       return;
     }
+    if (this._timer >= this._tickTime / 2 && this._timer - dt < this._tickTime / 2) {
+      MessagePipeline.sendMessage('game:enemyReadyTick');
+    }
     this._timer -= dt;
     if (this._timer <= 0) {
       this._timer = this._tickTime;
+      GameManager.gameTick();
       MessagePipeline.sendMessage('game:tick');
     }
   },

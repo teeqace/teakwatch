@@ -4,16 +4,20 @@ const MAX_SCORE = 999;
 const INIT_LIFE = 3;
 const MAX_MATERIAL_STACK = 5;
 const MATERIAL_STACK_REDUCE_TICK = 25;
-const PLAYER_INDEX_MAX = 6;
+const PLAYER_INDEX_MAX = 5;
+const SAFE_INTERVAL = 5;
 
 class GameManager {
 
   constructor() {
+    this._gameTickTimes = 0;
+    this._isDemo = true;
   }
   
   resetGame() {
     this._isPaused = false;
     this._isPausable = false;
+    this._isDemo = false;
     MessagePipeline.sendMessage('game:displayPause');
 
     /**
@@ -54,6 +58,7 @@ class GameManager {
      */
     this._gameOver = false;
 
+    this._gameTickTimes = 0;
   }
 
   pause() {
@@ -101,6 +106,10 @@ class GameManager {
     }
   }
 
+  get materialTick() {
+    return this._materialTick || 0;
+  }
+
   get materialStack() {
     return this._materialStack || 0;
   }
@@ -112,15 +121,23 @@ class GameManager {
 
   get materialRemaining() {
     let oneInMove = 0;
-    if (!this._goalRight && this._playerIndex < PLAYER_INDEX_MAX) {
+    // if (!this._goalRight && this._playerIndex < PLAYER_INDEX_MAX) {
+    //   oneInMove = 1;
+    // }
+    if (!this._goalRight) {
       oneInMove = 1;
     }
     return MAX_MATERIAL_STACK - this._materialStack - oneInMove;
   }
 
+  get materialReduceTickMax() {
+    return MATERIAL_STACK_REDUCE_TICK;
+  }
+
   addMaterialStack() {
     this._materialStack += 1;
     MessagePipeline.sendMessage('game:displayMaterialStack');
+    MessagePipeline.sendMessage('game:catAway');
     if (this._materialStack >= MAX_MATERIAL_STACK) {
       this._playerMovable = false;
       MessagePipeline.sendMessage('game:tickStop');
@@ -134,19 +151,20 @@ class GameManager {
   }
 
   materialStackTick() {
-    if (this._materialStack === 0) {
-      return;
+    if (this._materialStack > 0) {
+      this._materialTick -= 1;
+      if (this._materialTick <= 0) {
+        this.reduceMaterialStack();
+        this._materialTick = MATERIAL_STACK_REDUCE_TICK;
+      }
     }
-    this._materialTick -= 1;
-    if (this._materialTick <= 0) {
-      this.reduceMaterialStack();
-      this._materialTick = MATERIAL_STACK_REDUCE_TICK;
-    }
+    MessagePipeline.sendMessage('game:materialTick');
   }
 
   reduceMaterialStack() {
     this._materialStack -= 1;
     MessagePipeline.sendMessage('game:displayMaterialStack');
+    MessagePipeline.sendMessage('game:catStealed');
   }
 
   get playerIndex() {
@@ -242,6 +260,37 @@ class GameManager {
   get gameOver() {
     return this._gameOver;
   }
+
+  get gameTickTimes() {
+    return this._gameTickTimes;
+  }
+  
+  get isSafeTick() {
+    return this._gameTickTimes % SAFE_INTERVAL === 0;
+  }
+
+  get safeInterval() {
+    return SAFE_INTERVAL;
+  }
+
+  gameTick() {
+    this._gameTickTimes += 1;
+    this.materialStackTick();
+  }
+
+  get isDemo() {
+    return this._isDemo;
+  }
+
+  demoStart() {
+    this._isDemo = true;
+    MessagePipeline.sendMessage('game:demoStart');
+  }
+
+  demoStop() {
+    this._isDemo = false;
+  }
+
 }
 
 let __instance = new GameManager();

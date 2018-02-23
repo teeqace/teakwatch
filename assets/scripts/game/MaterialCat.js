@@ -21,6 +21,18 @@ cc.Class({
     MessagePipeline.on('game:materialTick', this._materialTick, this);
     MessagePipeline.on('game:catStealed', this._catStealed, this);
     MessagePipeline.on('game:catAway', this._catAway, this);
+    MessagePipeline.on('game:demoStart', this._demoStart, this);
+    this._catDisplayCount = 0;
+    this._materialDisplayCount = 0;
+    this._catReady = false;
+    this._catAppear = false;
+  },
+
+  _demoStart() {
+    this.catAppear.displayOff();
+    this.catReady.displayOff();
+    this.catSteal.displayOff();
+    this.material.displayOff();
     this._catDisplayCount = 0;
     this._materialDisplayCount = 0;
     this._catReady = false;

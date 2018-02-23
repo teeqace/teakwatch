@@ -284,6 +284,8 @@ class GameManager {
 
   demoStart() {
     this._isDemo = true;
+    this._materialStack = 0;
+    this._materialTick = 0;
     MessagePipeline.sendMessage('game:demoStart');
   }
 
